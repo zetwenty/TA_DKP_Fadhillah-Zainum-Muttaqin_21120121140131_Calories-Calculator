@@ -3,6 +3,8 @@ from cgitb import text
 from tkinter import *
 from rumus import *
 
+global bmilist 
+bmilist = []
 def calculate():
     # -------------Input dan menampilkan data----------------
 
@@ -22,7 +24,6 @@ def calculate():
         bmr = female_bmr(berat, tinggi, umur)
         calories_burned = female_caloriesB(detakJ, berat, umur, durasi)
     
-    
     bmi = bmi_cal(berat, tinggi)
     if bmi < 18.5:
         pesan="Berat badan kurang"
@@ -31,12 +32,25 @@ def calculate():
     else:
         pesan="Berat badan berlebih"
     
+    
+    bmilist.insert(0, bmi)
+    if len(bmilist) > 5:
+        bmilist.pop()
 
+    count = 1
+    listbox.delete(0,END)
+    for line in bmilist:
+        listbox.insert(count, round(line, 1))
+        count+=1      
+    
     # Menampilkan data yang telah dihitung
     bmr_output.config(text=int(bmr))
     calorB_output.config(text=int(calories_burned))
-    bmi_output.config(text=float(bmi))
+    bmi_output.config(text=round(bmi, 1))
     pesan_output.config(text=pesan)
+
+def delete():
+    listbox.delete()
 
 
 def clear():
@@ -45,6 +59,7 @@ def clear():
     calorB_output.config(text="")
     bmi_output.config(text="")
     pesan_output.config(text="")
+    bmilist.clear()
 
     # Menghapus output
     umur_input.delete(0, END)
@@ -52,6 +67,7 @@ def clear():
     tinggi_input.delete(0, END)
     detakJ_input.delete(0, END)
     durasi_input.delete(0, END)
+    listbox.delete(0, END)
 
 
 root = Tk()
@@ -59,7 +75,7 @@ root.title("Calorie Calculator")
 root.bind("<Return>", lambda x: calculate())
 root.config(bg="lightblue")
 app_title = Label(
-    root, text="EXERCISE CALORIE CALCULATOR", pady=10, font=("Calibri 12 bold"), bg=("lightblue")
+    root, text="EXERCISE CALORIES CALCULATOR", pady=10, font=("Calibri 12 bold"), bg=("lightblue")
 )
 app_title.grid(row=0, column=0, columnspan=2)
 gender = IntVar()
@@ -132,6 +148,13 @@ bmi_output.grid(row=8, column=0)
 pesan_output = Label(output_frame, font=("Helvetica 15 bold"), bg="lightblue")
 pesan_output.grid(row=9, column=0, columnspan=2)
 
+bmilist_title = Label(root, text="List BMI", pady=10, font=("Calibri 12 bold"), bg=("lightblue"))
+bmilist_title.grid(row=0, column=2, ipady=10, padx=20)
+listbox = Listbox(root)
+listbox.grid(row=1, column=2, ipady=10, padx=20)
+listbox.config(bg="lightblue")
+
+ 
 # Tombol Calculate
 calculate_button = Button(root, width=15, text="Calculate", command=calculate)
 calculate_button.grid(row=2, column=0, pady=[20, 0], padx=20)
